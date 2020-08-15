@@ -7,7 +7,7 @@ from matplotlib.pyplot import figure
 import matplotlib.patches as patches
 
 # insert the keypoints and the image
-n = "600"
+n = "001"
 this = "results/mamatch_1_rally_1_1080_60fps_BODY_25_MaxPeople.json/match_1_rally_1_1080_60fps_000000000{0}_keypoints.json".format(n)
 that = "data/frames/match_1_rally_1_1080_60fps/image-{0}.jpeg".format(n)
 
@@ -92,6 +92,9 @@ rect2 = plt.Rectangle(
     (box_origin2[0], box_origin2[1]),
     width2, height2,
     fill=False, edgecolor='red')
+
+print(rect1)
+print(rect2)
 
 # Plots rectagles on the figure
 plt.gca().add_patch(rect1)

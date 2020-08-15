@@ -1,9 +1,9 @@
 # credit for all the code below https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/
-
+#%%
 import cv2
 import sys
-
-(major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')￼
+import matplotlib.pyplot as plt
+#(major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')￼
 
 if __name__ == '__main__' :
 
@@ -13,49 +13,47 @@ if __name__ == '__main__' :
     tracker_types = ['BOOSTING', 'MIL','KCF', 'TLD', 'MEDIANFLOW', 'GOTURN', 'MOSSE', 'CSRT']
     tracker_type = tracker_types[2]
 
-    if int(minor_ver) < 3:
-        tracker = cv2.Tracker_create(tracker_type)
-    else:
-        if tracker_type == 'BOOSTING':
-            tracker = cv2.TrackerBoosting_create()
-        if tracker_type == 'MIL':
-            tracker = cv2.TrackerMIL_create()
-        if tracker_type == 'KCF':
-            tracker = cv2.TrackerKCF_create()
-        if tracker_type == 'TLD':
-            tracker = cv2.TrackerTLD_create()
-        if tracker_type == 'MEDIANFLOW':
-            tracker = cv2.TrackerMedianFlow_create()
-        if tracker_type == 'GOTURN':
-            tracker = cv2.TrackerGOTURN_create()
-        if tracker_type == 'MOSSE':
-            tracker = cv2.TrackerMOSSE_create()
-        if tracker_type == "CSRT":
-            tracker = cv2.TrackerCSRT_create()
+    if tracker_type == 'BOOSTING':
+        tracker = cv2.TrackerBoosting_create()
+    if tracker_type == 'MIL':
+        tracker = cv2.TrackerMIL_create()
+    if tracker_type == 'KCF':
+        tracker = cv2.TrackerKCF_create()
+    if tracker_type == 'TLD':
+        tracker = cv2.TrackerTLD_create()
+    if tracker_type == 'MEDIANFLOW':
+        tracker = cv2.TrackerMedianFlow_create()
+    if tracker_type == 'GOTURN':
+        tracker = cv2.TrackerGOTURN_create()
+    if tracker_type == 'MOSSE':
+        tracker = cv2.TrackerMOSSE_create()
+    if tracker_type == "CSRT":
+        tracker = cv2.TrackerCSRT_create()
 
     # Read video
-    video = cv2.VideoCapture("videos/chaplin.mp4")
+    video = cv2.VideoCapture("match_1_rally_1_1080_60fps.mp4")
 
     # Exit if video not opened.
     if not video.isOpened():
-        print "Could not open video"
+        print( "Could not open video" )
         sys.exit()
 
     # Read first frame.
     ok, frame = video.read()
     if not ok:
-        print 'Cannot read video file'
+        print( 'Cannot read video file' )
         sys.exit()
     
     # Define an initial bounding box
-    bbox = (287, 23, 86, 320)
+    bbox = (1370, 528, 117, 246)
 
     # Uncomment the line below to select a different bounding box
-    bbox = cv2.selectROI(frame, False)
+    #bbox = cv2.selectROI(frame, False)
 
     # Initialize tracker with first frame and bounding box
     ok = tracker.init(frame, bbox)
 
+    frame_array = []
     while True:
         # Read a new frame
         ok, frame = video.read()
@@ -79,18 +77,33 @@ if __name__ == '__main__' :
             cv2.rectangle(frame, p1, p2, (255,0,0), 2, 1)
         else :
             # Tracking failure
-            cv2.putText(frame, "Tracking failure detected", (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
+            cv2.putText(frame, "Tracking failure detected", (100,110), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
 
         # Display tracker type on frame
-        cv2.putText(frame, tracker_type + " Tracker", (100,20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50),2);
+        cv2.putText(frame, tracker_type + " Tracker", (100,50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50),2);
     
         # Display FPS on frame
-        cv2.putText(frame, "FPS : " + str(int(fps)), (100,50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50), 2);
+        cv2.putText(frame, "FPS : " + str(int(fps)), (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50), 2);
 
         # Display result
-        cv2.imshow("Tracking", frame)
+        # plt.imshow(frame, cmap = 'gray', interpolation = 'bicubic')
+        # plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+        # plt.show()
+        height, width, layers = frame.shape
+        size = (width,height)
+        
+        #inserting the frames into an image array
+        frame_array.append(frame)
+        
+    out = cv2.VideoWriter("tracking.avi",cv2.VideoWriter_fourcc(*'DIVX'), 60, size)
+    
+    for i in range(len(frame_array)):
+        # writing to a image array
+        out.write(frame_array[i])
 
-        # Exit if ESC pressed
-        k = cv2.waitKey(1) & 0xff
-        if k == 27 : break
+    out.release()
 
+        # Release everything if job is finished
+        
+    #out.release()
+    
