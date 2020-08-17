@@ -3,24 +3,25 @@
 import cv2
 import sys
 import matplotlib.pyplot as plt
+import time
 #(major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')￼
 
 if __name__ == '__main__' :
     
     tracker_types = [
-            #'BOOSTING',
-            #'MIL',
+            'BOOSTING',
+            'MIL',
             'KCF',
-            #'TLD',
-            #'MEDIANFLOW',
+            'TLD',
+            'MEDIANFLOW',
             #'GOTURN',
-            #'MOSSE',
-            #'CSRT'
+            'MOSSE',
+            'CSRT'
             ]
     
-    for i in range(len(tracker_types)):
-        
-        tracker_type = tracker_types[i]
+    for i, tracker_type in enumerate(tracker_types):
+        start = time.time()
+
         pathOut = "results/Tracking/{0}.avi".format(tracker_type)
         
         if tracker_type == 'BOOSTING':
@@ -87,13 +88,13 @@ if __name__ == '__main__' :
                 cv2.putText(frame, "Tracking failure detected", (100,110), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
 
             # Display tracker type on frame
-            cv2.putText(frame, tracker_type + " Tracker", (100,50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50),2);
-        
+            cv2.putText(frame, tracker_type + " Tracker", (100,50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50),2)    
+            
             # Display FPS on frame
-            cv2.putText(frame, "FPS : " + str(int(fps)), (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50), 2);
+            cv2.putText(frame, "FPS : " + str(int(fps)), (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50), 2)
 
-            # Display result
-            # plt.imshow(frame, cmap = 'gray', interpolation = 'bicubic')
+            #Display result
+            # plt.imshow(frame, interpolation = 'bicubic')
             # plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
             # plt.show()
             height, width, layers = frame.shape
@@ -110,4 +111,7 @@ if __name__ == '__main__' :
 
         # Release everything if job is finished
         out.release()
+        end = time.time()
+        duration = end - start
+        print([tracker_type, duration])
 # %%
