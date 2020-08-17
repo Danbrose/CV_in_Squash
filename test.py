@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from matplotlib.pyplot import figure
 import matplotlib.patches as patches
 
+
 # insert the keypoints and the image
 n = "001"
 this = "results/mamatch_1_rally_1_1080_60fps_BODY_25_MaxPeople.json/match_1_rally_1_1080_60fps_000000000{0}_keypoints.json".format(n)
@@ -78,6 +79,7 @@ width2, height2, box_origin2, centroid2 = bbox_from_KP(KP2, 2.2)
 figure(num=None, figsize=(11, 10), dpi=200, facecolor='w', edgecolor='k')
 im = plt.imread(that)
 implot = plt.imshow(im, origin='upper')
+plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
 for n, value in enumerate(person1_KP_new):
     plt.plot(person1_KP_new[n][0], person1_KP_new[n][1], 'bo')
 for n, value in enumerate(person2_KP_new):
