@@ -4,10 +4,10 @@ opencv_object_tracking.py
 data/*
 results/*
 *.mp4
+*.avi
 .devcontainer/*
 .empty/*
 .vscode/.ropeproject/*
-tracking.avi
 goturn.*
 simple-object-tracking/*
 simple-object-tracking/pyimagesearch/*
