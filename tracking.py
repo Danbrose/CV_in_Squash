@@ -9,14 +9,14 @@ import time
 if __name__ == '__main__' :
     
     tracker_types = [
-            'BOOSTING',
-            'MIL',
-            'KCF',
-            'TLD',
-            'MEDIANFLOW',
-            #'GOTURN',
-            'MOSSE',
-            'CSRT'
+            # 'BOOSTING',
+            # 'MIL',
+            # 'KCF',
+            # 'TLD',
+            # 'MEDIANFLOW',
+            'GOTURN',
+            # 'MOSSE',
+            # 'CSRT'
             ]
     
     for i, tracker_type in enumerate(tracker_types):
@@ -62,7 +62,9 @@ if __name__ == '__main__' :
         ok = tracker.init(frame, bbox)
 
         frame_array = []
+        n = 0
         while True:
+            n += 1
             # Read a new frame
             ok, frame = video.read()
             if not ok:
@@ -75,7 +77,7 @@ if __name__ == '__main__' :
             ok, bbox = tracker.update(frame)
 
             # Calculate Frames per second (FPS)
-            fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer);
+            fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
 
             # Draw bounding box
             if ok:
@@ -94,24 +96,24 @@ if __name__ == '__main__' :
             cv2.putText(frame, "FPS : " + str(int(fps)), (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50), 2)
 
             #Display result
-            # plt.imshow(frame, interpolation = 'bicubic')
-            # plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
-            # plt.show()
-            height, width, layers = frame.shape
-            size = (width,height)
+            plt.imshow(frame, interpolation = 'bicubic')
+            plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+            plt.savefig("results/Tracking/GOTURN/goturn_{0}".format(n))
+        #     height, width, layers = frame.shape
+        #     size = (width,height)
             
-            #inserting the frames into an image array
-            frame_array.append(frame)
+        #     #inserting the frames into an image array
+        #     frame_array.append(frame)
             
-        out = cv2.VideoWriter(pathOut,cv2.VideoWriter_fourcc(*'DIVX'), 60, size)
+        # out = cv2.VideoWriter(pathOut,cv2.VideoWriter_fourcc(*'DIVX'), 60, size)
         
-        for i in range(len(frame_array)):
-            # writing to a image array
-            out.write(frame_array[i])
+        # for i in range(len(frame_array)):
+        #     # writing to a image array
+        #     out.write(frame_array[i])
 
-        # Release everything if job is finished
-        out.release()
-        end = time.time()
-        duration = end - start
-        print([tracker_type, duration])
+        # # Release everything if job is finished
+        # out.release()
+        # end = time.time()
+        # duration = end - start
+        # print([tracker_type, duration])
 # %%
