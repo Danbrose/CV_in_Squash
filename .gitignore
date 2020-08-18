@@ -9,5 +9,7 @@ results/*
 .vscode/.ropeproject/*
 tracking.avi
 goturn.*
+simple-object-tracking/*
+simple-object-tracking/pyimagesearch/*
 
 
