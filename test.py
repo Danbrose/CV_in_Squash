@@ -6,6 +6,7 @@ Description: This is a test file
 """
 import json
 import glob
+import sys
 import cv2
 import numpy as np
 from scipy.signal import savgol_filter
@@ -23,7 +24,7 @@ H_MAT, _ = cv2.findHomography(PTS_SRC, PTS_DST)
 
 # collects key point FILES and puts them in to an ordered list
 FILES = []
-KP_PATH = 'results/OpenPose/Key_Points/mamatch_1_rally_2_1080_60fps_BODY_25_MaxPeople.json/*.json'
+KP_PATH = 'results/OpenPose/Key_Points/mamatch_1_rally_1_1080_60fps_BODY_25_MaxPeople.json/*.json'
 for filepath in glob.glob(KP_PATH):
     FILES.append(filepath)
 FILES = sorted(FILES)
@@ -38,12 +39,20 @@ for i, key_points in enumerate(FILES):
     frame_data = frame_draw(data)
     CLIP_DATA.append(frame_data)
 
-PATHOUT = "results/Court_Plots/court_plot_smoothed_2.avi"
+PATHOUT = "results/Center-Point_Tracking/location-point_tracking_smoothed_1.avi"
+
+# Read video
+video = cv2.VideoCapture("data/match_1_rally_1_1080_60fps.mp4")
+
+# Exit if video not opened.
+if not video.isOpened():
+    print( "Could not open video" )
+    sys.exit()
 
 def translate_point(x,y,h):
-    denom = h[2,0] *x + h[2,1] * y + h[2,2]
-    xPrime = (h[0,0] *x + h[0,1] * y + h[0,2])/ denom
-    yPrime = (h[1,0] *x + h[1,1] * y + h[1,2]) / denom
+    denom = h[2, 0] *x + h[2, 1] * y + h[2, 2]
+    xPrime = (h[0, 0] *x + h[0, 1] * y + h[0, 2])/ denom
+    yPrime = (h[1, 0] *x + h[1, 1] * y + h[1, 2]) / denom
     return np.array([int(xPrime), int(yPrime)])
 
 FRAME_ARRAY = []
@@ -69,7 +78,6 @@ for f in CLIP_DATA:
     objects = CT.update(CENTROIDS)
     # loop over the tracked objects
     for (objectID, centroid) in objects.items():
-        centroid = translate_point(centroid[0], centroid[1], H_MAT)
         TRACK_POINTS['{}'.format(objectID)]["X"].append(centroid[0])
         TRACK_POINTS['{}'.format(objectID)]["Y"].append(centroid[1])
 
@@ -88,27 +96,31 @@ for (PLAYER_ID, COORDINATES) in TRACK_POINTS.items():
             PLAYER_0.append([PLAYER_ID, X, Y])
         else:
             PLAYER_1.append([PLAYER_ID, X, Y])
+print('Drawing on frames')
 
 for FIRST, SECOND in zip(PLAYER_0, PLAYER_1):
-    frame = cv2.imread("court_plot.png")
+# Read a new frame
+    OK, FRAME = video.read()
+    if not OK:
+        break
     # draw both the ID of the object and the centroid of the
-    # object on the output frame
+    # object on the output FRAME
     text = "ID {}".format(FIRST[0])
-    cv2.putText(frame, text, (FIRST[1] - 10, FIRST[2] - 10),
+    cv2.putText(FRAME, text, (FIRST[1] - 10, FIRST[2] - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.circle(frame, (FIRST[1], FIRST[2]), 8, (0, 255, 0), -1)
+    cv2.circle(FRAME, (FIRST[1], FIRST[2]), 8, (0, 255, 0), -1)
 
     text = "ID {}".format(SECOND[0])
-    cv2.putText(frame, text, (SECOND[1] - 10, SECOND[2] - 10),
+    cv2.putText(FRAME, text, (SECOND[1] - 10, SECOND[2] - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.circle(frame, (SECOND[1], SECOND[2]), 8, (0, 255, 0), -1)
+    cv2.circle(FRAME, (SECOND[1], SECOND[2]), 8, (0, 255, 0), -1)
 
-    #inserting the frames into an image array
-    FRAME_ARRAY.append(frame)
+    #inserting the FRAMEs into an image array
+    FRAME_ARRAY.append(FRAME)
+    height, width, layers = FRAME.shape
+    size = (width, height)
 
-frame = cv2.imread("court_plot.png")
-height, width, layers = frame.shape
-size = (width, height)
+print('Finished drawing on frames')
 
 OUT = cv2.VideoWriter(PATHOUT, cv2.VideoWriter_fourcc(*'DIVX'), 60, size)
 
