@@ -1,21 +1,21 @@
 # This is a list of everything that is not to be included in the git repo because there are too many files to track or they are too large for git hub. Most of this comprises of demo footage, raw data and outputted data.
 
-opencv_object_tracking.py
-data/*
-results/*
+data/
+results/Center-Point_Tracking/center*.avi
+results/Traditional_Tracking/*.avi
+results/OpenPose/
+simple-object-tracking/
+__pycache__/
 *.mp4
 *.avi
 .devcontainer/*
 .empty/*
 .vscode/.ropeproject/*
 goturn.*
-simple-object-tracking/*
-simple-object-tracking/pyimagesearch/*
 sample.jpg
 sandbox.jpg
 TensorFlow-2.x-YOLOv3/
 __init__.py
-__pycache__/
 fastpose/
 goturn-files/
 
