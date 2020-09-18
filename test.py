@@ -9,7 +9,10 @@ import glob
 import sys
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
+import seaborn as sns
 from scipy.signal import savgol_filter
+from scipy import stats, integrate
 from frame_draw import frame_draw
 from centroidtracker import CentroidTracker
 
@@ -78,6 +81,7 @@ for f in CLIP_DATA:
     objects = CT.update(CENTROIDS)
     # loop over the tracked objects
     for (objectID, centroid) in objects.items():
+        centroid = translate_point(centroid[0], centroid[1], H_MAT)
         TRACK_POINTS['{}'.format(objectID)]["X"].append(centroid[0])
         TRACK_POINTS['{}'.format(objectID)]["Y"].append(centroid[1])
 
@@ -96,37 +100,22 @@ for (PLAYER_ID, COORDINATES) in TRACK_POINTS.items():
             PLAYER_0.append([PLAYER_ID, X, Y])
         else:
             PLAYER_1.append([PLAYER_ID, X, Y])
-print('Drawing on frames')
 
-for FIRST, SECOND in zip(PLAYER_0, PLAYER_1):
-# Read a new frame
-    OK, FRAME = video.read()
-    if not OK:
-        break
-    # draw both the ID of the object and the centroid of the
-    # object on the output FRAME
-    text = "ID {}".format(FIRST[0])
-    cv2.putText(FRAME, text, (FIRST[1] - 10, FIRST[2] - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.circle(FRAME, (FIRST[1], FIRST[2]), 8, (0, 255, 0), -1)
+print(PLAYER_0[1])
+court_plot = plt.imread("court_plot.png")
+imgshow = plt.imshow(court_plot)
 
-    text = "ID {}".format(SECOND[0])
-    cv2.putText(FRAME, text, (SECOND[1] - 10, SECOND[2] - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.circle(FRAME, (SECOND[1], SECOND[2]), 8, (0, 255, 0), -1)
+# call the kernel density estimator function
+ax = sns.kdeplot(PLAYER_0[1], PLAYER_0[2], cmap="Blues", shade=True, shade_lowest=False)
+# the function has additional parameters you can play around with to fine-tune your heatmap, e.g.:
+#ax = sns.kdeplot(x, y, kernel="gau", bw = 25, cmap="Reds", n_levels = 50, shade=True, shade_lowest=False, gridsize=100)
 
-    #inserting the FRAMEs into an image array
-    FRAME_ARRAY.append(FRAME)
-    height, width, layers = FRAME.shape
-    size = (width, height)
-
-print('Finished drawing on frames')
-
-OUT = cv2.VideoWriter(PATHOUT, cv2.VideoWriter_fourcc(*'DIVX'), 60, size)
-
-for i, value in enumerate(FRAME_ARRAY):
-    # writing to a image array
-    OUT.write(value)
-
-    # Release everything if job is finished
-OUT.release()
+# plot your KDE
+ax.set_frame_on(False)
+plt.xlim(0, 520)
+plt.ylim(0, 775)
+plt.axis('off')
+ 
+# save your KDE to disk
+fig = ax.get_figure()
+fig.savefig('kde.png', transparent=True, bbox_inches='tight', pad_inches=0)
