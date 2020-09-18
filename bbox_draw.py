@@ -95,9 +95,6 @@ rect2 = plt.Rectangle(
     width2, height2,
     fill=False, edgecolor='red')
 
-print(rect1)
-print(rect2)
-
 # Plots rectagles on the figure
 plt.gca().add_patch(rect1)
 plt.gca().add_patch(rect2)
@@ -105,15 +102,3 @@ plt.gca().add_patch(rect2)
 # Plots the centroids for clarity
 plt.plot(centroid1[0], centroid1[1], 'wo')
 plt.plot(centroid2[0], centroid2[1], 'wo')
-#%%
-
-
-
-
-
-
-
-
-
-
-# %%

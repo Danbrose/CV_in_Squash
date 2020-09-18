@@ -11,5 +11,11 @@ results/*
 goturn.*
 simple-object-tracking/*
 simple-object-tracking/pyimagesearch/*
-
+sample.jpg
+sandbox.jpg
+TensorFlow-2.x-YOLOv3/
+__init__.py
+__pycache__/
+fastpose/
+goturn-files/
 

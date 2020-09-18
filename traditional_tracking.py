@@ -22,7 +22,7 @@ if __name__ == '__main__' :
     for i, tracker_type in enumerate(tracker_types):
         start = time.time()
 
-        pathOut = "results/Tracking/{0}.avi".format(tracker_type)
+        pathOut = "results/Traditional_Tracking/{0}.avi".format(tracker_type)
         
         if tracker_type == 'BOOSTING':
             tracker = cv2.TrackerBoosting_create()
@@ -42,7 +42,7 @@ if __name__ == '__main__' :
             tracker = cv2.TrackerCSRT_create()
 
         # Read video
-        video = cv2.VideoCapture("match_1_rally_1_1080_60fps.mp4")
+        video = cv2.VideoCapture("data/match_1_rally_1_1080_60fps.mp4")
 
         # Exit if video not opened.
         if not video.isOpened():
