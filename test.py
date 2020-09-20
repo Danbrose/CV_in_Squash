@@ -42,16 +42,6 @@ for i, key_points in enumerate(FILES):
     frame_data = frame_draw(data)
     CLIP_DATA.append(frame_data)
 
-PATHOUT = "results/Center-Point_Tracking/location-point_tracking_smoothed_1.avi"
-
-# Read video
-video = cv2.VideoCapture("data/match_1_rally_1_1080_60fps.mp4")
-
-# Exit if video not opened.
-if not video.isOpened():
-    print( "Could not open video" )
-    sys.exit()
-
 def translate_point(x,y,h):
     denom = h[2, 0] *x + h[2, 1] * y + h[2, 2]
     xPrime = (h[0, 0] *x + h[0, 1] * y + h[0, 2])/ denom
@@ -87,35 +77,55 @@ for f in CLIP_DATA:
 
 INTERVAL = 31
 POLY = 2
-TRACK_POINTS['0']['X'] = savgol_filter(TRACK_POINTS['0']['X'], INTERVAL, POLY).round().astype(int)
-TRACK_POINTS['0']['Y'] = savgol_filter(TRACK_POINTS['0']['Y'], INTERVAL, POLY).round().astype(int)
-TRACK_POINTS['1']['X'] = savgol_filter(TRACK_POINTS['1']['X'], INTERVAL, POLY).round().astype(int)
-TRACK_POINTS['1']['Y'] = savgol_filter(TRACK_POINTS['1']['Y'], INTERVAL, POLY).round().astype(int)
+TRACK_POINTS['0']['X'] = savgol_filter(TRACK_POINTS['0']['X'], INTERVAL,
+                                       POLY).round().astype(int)
+TRACK_POINTS['0']['Y'] = savgol_filter(TRACK_POINTS['0']['Y'], INTERVAL,
+                                       POLY).round().astype(int)
+TRACK_POINTS['1']['X'] = savgol_filter(TRACK_POINTS['1']['X'], INTERVAL,
+                                       POLY).round().astype(int)
+TRACK_POINTS['1']['Y'] = savgol_filter(TRACK_POINTS['1']['Y'], INTERVAL,
+                                       POLY).round().astype(int)
 
-PLAYER_0 = []
-PLAYER_1 = []
-for (PLAYER_ID, COORDINATES) in TRACK_POINTS.items():
-    for X, Y in zip(COORDINATES['X'], COORDINATES['Y']):
-        if PLAYER_ID == '0':
-            PLAYER_0.append([PLAYER_ID, X, Y])
-        else:
-            PLAYER_1.append([PLAYER_ID, X, Y])
+PLAYER_0_X = TRACK_POINTS['0']['X']
+PLAYER_0_Y = TRACK_POINTS['0']['Y']
+PLAYER_1_X = TRACK_POINTS['1']['X']
+PLAYER_1_Y = TRACK_POINTS['1']['Y']
 
-print(PLAYER_0[1])
 court_plot = plt.imread("court_plot.png")
-imgshow = plt.imshow(court_plot)
 
-# call the kernel density estimator function
-ax = sns.kdeplot(PLAYER_0[1], PLAYER_0[2], cmap="Blues", shade=True, shade_lowest=False)
-# the function has additional parameters you can play around with to fine-tune your heatmap, e.g.:
-#ax = sns.kdeplot(x, y, kernel="gau", bw = 25, cmap="Reds", n_levels = 50, shade=True, shade_lowest=False, gridsize=100)
+fig = plt.figure()
+ax = fig.add_subplot(1, 2, 1)
+imgplot = plt.imshow(court_plot)
+ax = sns.kdeplot(PLAYER_0_X, PLAYER_0_Y,
+                 cmap="coolwarm",
+                 alpha=0.9,
+                 shade=True,
+                 shade_lowest=False,
+                 levels=50,
+                 antialiased=True)
 
-# plot your KDE
+ax.set_title('0')
 ax.set_frame_on(False)
-plt.xlim(0, 520)
-plt.ylim(0, 775)
 plt.axis('off')
- 
-# save your KDE to disk
+plt.xlim(0, 520)
+plt.ylim(775, 0)
+# plt.colorbar(ticks=[0.1, 0.3, 0.5, 0.7], orientation='horizontal')
+
+ax = fig.add_subplot(1, 2, 2)
+imgplot = plt.imshow(court_plot)
+ax = sns.kdeplot(PLAYER_1_X, PLAYER_1_Y,
+                 cmap="coolwarm",
+                 alpha=0.9,
+                 shade=True,
+                 shade_lowest=False,
+                 levels=50,
+                 antialiased=True)
+ax.set_title('1')
+# imgplot.set_clim(0.0, 0.7)
+# plt.colorbar(ticks=[0.1, 0.3, 0.5, 0.7], orientation='horizontal')
+plt.axis('off')
+plt.xlim(0, 520)
+plt.ylim(775, 0)
+
 fig = ax.get_figure()
-fig.savefig('kde.png', transparent=True, bbox_inches='tight', pad_inches=0)
+fig.savefig('results/heatmaps/match_1_rally_1_heatmap.png', transparent=True, bbox_inches='tight', pad_inches=0)
