@@ -12,6 +12,7 @@ import xmltodict
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib import ticker as ticker
 import seaborn as sns
 from scipy.signal import savgol_filter
 from scipy import stats, integrate
@@ -122,12 +123,42 @@ GT_df['tracking_y'] = PLAYER_Y
 
 GT_df['abs_error'] = np.sqrt(abs(GT_df['GT_X'] - GT_df['tracking_x'])**2 + abs(GT_df['GT_X'] - GT_df['tracking_x']))
 GT_df['abs_error_meters'] = GT_df['abs_error'] * PIXELS2METERS
-GT_df.loc[GT_df['ID'] == 1, 'abs_error_meters']
 
-# plt.figure(figsize=(8, 5), dpi= 100)
-# plt.plot(GT_df.loc[GT_df['ID'] == 0, 'abs_error_meters'], GT_df.loc[GT_df['ID'] == 0, 'abs_error_meter'], 'go--', linewidth=2, markersize=12)
-# plt.savefig("error_plot_0.png", bbox_inches='tight', facecolor='w', edgecolor='k')
+error_0_df = GT_df.loc[GT_df['ID'] == 0, ['frame', 'abs_error_meters']]
+AVG_ERROR_0 = error_0_df['abs_error_meters'].mean()
+error_1_df = GT_df.loc[GT_df['ID'] == 1, ['frame', 'abs_error_meters']]
+AVG_ERROR_1 = error_1_df['abs_error_meters'].mean()
 
-# plt.figure(figsize=(8, 5), dpi= 100)
-# plt.plot(GT_df['abs_error_meters'], y, 'go--', linewidth=2, markersize=12)
-# plt.savefig("save as", bbox_inches='tight', facecolor='w', edgecolor='k')
+AVG_ERROR = GT_df['abs_error_meters'].mean()
+print(AVG_ERROR)
+
+plt.figure(figsize=(10, 5), dpi= 100)
+plt.title("Absolute Error of Tracking Position and Ground Truth, ID = 0")
+plt.plot(error_0_df['frame'], error_0_df['abs_error_meters'], 'r',
+         linewidth=0.8, label="Absolute error - ID = 0")
+plt.plot(error_1_df['frame'], error_1_df['abs_error_meters'], 'b',
+         linewidth=0.8, label="Absolute error - ID = 1")
+plt.plot([0, 1300], [AVG_ERROR, AVG_ERROR], 'k--',
+         label="Average error = {}m".format(round(AVG_ERROR, 3)))
+plt.legend(loc='upper left')
+plt.xlabel('Frame'), plt.ylabel('Error (m)')
+plt.xlim(0, 1300) #plt.ylim(0, 0.16)
+plt.xticks(np.arange(0, 1300, step=120))
+plt.axes().xaxis.set_minor_locator(ticker.MultipleLocator(60))
+plt.savefig("results/plots/{}_error_plot.png".format(CLIP), bbox_inches='tight',
+            facecolor='w', edgecolor='k')
+
+# # Seperate plots 
+# plt.figure(figsize=(10, 5), dpi= 100)
+# plt.title("Absolute Error of Tracking Position and Ground Truth, ID = 1")
+# plt.plot(error_1_df['frame'], error_1_df['abs_error_meters'], 'r',
+         # linewidth=0.8, label="Absolute error")
+# plt.plot([0, 846], [AVG_ERROR_1, AVG_ERROR_1], 'k--',
+         # label="Average error = {}m".format(round(AVG_ERROR_1, 3)))
+# plt.legend(loc='upper left')
+# plt.xlabel('Frame'), plt.ylabel('Error (m)')
+# plt.xlim(0, 846), plt.ylim(0, 0.16)
+# plt.xticks(np.arange(0, 850, step=120))
+# plt.axes().xaxis.set_minor_locator(ticker.MultipleLocator(60))
+# plt.savefig("results/plots/{}_error_plot_1.png".format(CLIP), bbox_inches='tight',
+            # facecolor='w', edgecolor='k')
