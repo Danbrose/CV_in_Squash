@@ -9,7 +9,7 @@ import matplotlib.patches as patches
 
 # insert the keypoints and the image
 n = "001"
-this = "results/mamatch_1_rally_1_1080_60fps_BODY_25_MaxPeople.json/match_1_rally_1_1080_60fps_000000000{0}_keypoints.json".format(n)
+this = "results/OpenPose/Key_Points/mamatch_1_rally_1_1080_60fps_BODY_25_MaxPeople.json/match_1_rally_1_1080_60fps_000000000{0}_keypoints.json".format(n)
 that = "data/frames/match_1_rally_1_1080_60fps/image-{0}.jpeg".format(n)
 
 with open(this) as json_file:
@@ -86,19 +86,20 @@ for n, value in enumerate(person2_KP_new):
     plt.plot(person2_KP_new[n][0], person2_KP_new[n][1], 'ro')
 
 # draws ractagles using the calculated values
-rect1 = plt.Rectangle(
-    (box_origin1[0], box_origin1[1]),
-    width1, height1,
-    fill=False, edgecolor='blue')
-rect2 = plt.Rectangle(
-    (box_origin2[0], box_origin2[1]),
-    width2, height2,
-    fill=False, edgecolor='red')
+# rect1 = plt.Rectangle(
+    # (box_origin1[0], box_origin1[1]),
+    # width1, height1,
+    # fill=False, edgecolor='blue')
+# rect2 = plt.Rectangle(
+    # (box_origin2[0], box_origin2[1]),
+    # width2, height2,
+    # fill=False, edgecolor='red')
 
-# Plots rectagles on the figure
-plt.gca().add_patch(rect1)
-plt.gca().add_patch(rect2)
+# # Plots rectagles on the figure
+# plt.gca().add_patch(rect1)
+# plt.gca().add_patch(rect2)
 
 # Plots the centroids for clarity
-plt.plot(centroid1[0], centroid1[1], 'wo')
-plt.plot(centroid2[0], centroid2[1], 'wo')
+plt.plot(centroid1[0], centroid1[1], 'w+')
+plt.plot(centroid2[0], centroid2[1], 'w+')
+plt.savefig('results/OpenPose/kp_centroids.png', bbox_inches='tight')

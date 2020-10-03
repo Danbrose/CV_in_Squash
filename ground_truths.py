@@ -101,6 +101,19 @@ for f in CLIP_DATA:
         TRACK_POINTS['{}'.format(objectID)]["X"].append(centroid[0])
         TRACK_POINTS['{}'.format(objectID)]["Y"].append(centroid[1])
 
+# Clip 1
+TRACK_X = TRACK_POINTS['1']['X'] + TRACK_POINTS['0']['X']
+TRACK_Y = TRACK_POINTS['1']['Y'] + TRACK_POINTS['0']['Y']
+
+# Clip 2
+# TRACK_X = TRACK_POINTS['0']['X'] + TRACK_POINTS['1']['X']
+# TRACK_Y = TRACK_POINTS['0']['Y'] + TRACK_POINTS['1']['Y']
+
+GT_df['tracking_x'] = TRACK_X
+GT_df['tracking_y'] = TRACK_Y
+
+print(GT_df)
+
 INTERVAL = 31
 POLY = 2
 TRACK_POINTS['0']['X'] = savgol_filter(TRACK_POINTS['0']['X'], INTERVAL,
@@ -113,15 +126,25 @@ TRACK_POINTS['1']['Y'] = savgol_filter(TRACK_POINTS['1']['Y'], INTERVAL,
                                        POLY).round().astype(int)
 
 PIXELS2METERS = 6.4/775
+
+# Clip 1
 PLAYER_X = TRACK_POINTS['1']['X'].T
 PLAYER_X = np.append(PLAYER_X, TRACK_POINTS['0']['X'].T)
 PLAYER_Y = TRACK_POINTS['1']['Y'].T
 PLAYER_Y = np.append(PLAYER_Y, TRACK_POINTS['0']['Y'].T)
 
-GT_df['tracking_x'] = PLAYER_X
-GT_df['tracking_y'] = PLAYER_Y
+# Clip 2
+# PLAYER_X = TRACK_POINTS['0']['X'].T
+# PLAYER_X = np.append(PLAYER_X, TRACK_POINTS['1']['X'].T)
+# PLAYER_Y = TRACK_POINTS['0']['Y'].T
+# PLAYER_Y = np.append(PLAYER_Y, TRACK_POINTS['1']['Y'].T)
 
-GT_df['abs_error'] = np.sqrt(abs(GT_df['GT_X'] - GT_df['tracking_x'])**2 + abs(GT_df['GT_X'] - GT_df['tracking_x']))
+
+GT_df['tracking_x_s'] = PLAYER_X
+GT_df['tracking_y_s'] = PLAYER_Y
+
+
+GT_df['abs_error'] = np.sqrt(abs(GT_df['GT_X'] - GT_df['tracking_x'])**2 + abs(GT_df['GT_Y'] - GT_df['tracking_y'])**2)
 GT_df['abs_error_meters'] = GT_df['abs_error'] * PIXELS2METERS
 
 error_0_df = GT_df.loc[GT_df['ID'] == 0, ['frame', 'abs_error_meters']]
@@ -130,13 +153,13 @@ error_1_df = GT_df.loc[GT_df['ID'] == 1, ['frame', 'abs_error_meters']]
 AVG_ERROR_1 = error_1_df['abs_error_meters'].mean()
 
 AVG_ERROR = GT_df['abs_error_meters'].mean()
-print(AVG_ERROR)
+print(GT_df.head())
 
 plt.figure(figsize=(10, 5), dpi= 100)
-plt.title("Absolute Error of Tracking Position and Ground Truth, ID = 0")
-plt.plot(error_0_df['frame'], error_0_df['abs_error_meters'], 'r',
+plt.title("Absolute Error of Tracking Position and Ground Truth")
+plt.plot(error_1_df['frame'], error_1_df['abs_error_meters'], 'r',
          linewidth=0.8, label="Absolute error - ID = 0")
-plt.plot(error_1_df['frame'], error_1_df['abs_error_meters'], 'b',
+plt.plot(error_0_df['frame'], error_0_df['abs_error_meters'], 'b',
          linewidth=0.8, label="Absolute error - ID = 1")
 plt.plot([0, 1300], [AVG_ERROR, AVG_ERROR], 'k--',
          label="Average error = {}m".format(round(AVG_ERROR, 3)))
@@ -146,6 +169,34 @@ plt.xlim(0, 1300) #plt.ylim(0, 0.16)
 plt.xticks(np.arange(0, 1300, step=120))
 plt.axes().xaxis.set_minor_locator(ticker.MultipleLocator(60))
 plt.savefig("results/plots/{}_error_plot.png".format(CLIP), bbox_inches='tight',
+            facecolor='w', edgecolor='k')
+
+
+GT_df['abs_error_s'] = np.sqrt(abs(GT_df['GT_X'] - GT_df['tracking_x_s'])**2 + abs(GT_df['GT_Y'] - GT_df['tracking_y_s'])**2)
+GT_df['abs_error_s_meters'] = GT_df['abs_error_s'] * PIXELS2METERS
+
+error_0_df = GT_df.loc[GT_df['ID'] == 0, ['frame', 'abs_error_s_meters']]
+AVG_ERROR_0 = error_0_df['abs_error_s_meters'].mean()
+error_1_df = GT_df.loc[GT_df['ID'] == 1, ['frame', 'abs_error_s_meters']]
+AVG_ERROR_1 = error_1_df['abs_error_s_meters'].mean()
+
+AVG_ERROR = GT_df['abs_error_s_meters'].mean()
+print(GT_df.head())
+
+plt.figure(figsize=(10, 5), dpi= 100)
+plt.title("Absolute Error of Smoothed Tracking Position and Ground Truth")
+plt.plot(error_1_df['frame'], error_1_df['abs_error_s_meters'], 'r',
+         linewidth=0.8, label="Absolute error - ID = 0")
+plt.plot(error_0_df['frame'], error_0_df['abs_error_s_meters'], 'b',
+         linewidth=0.8, label="Absolute error - ID = 1")
+plt.plot([0, 1300], [AVG_ERROR, AVG_ERROR], 'k--',
+         label="Average error = {}m".format(round(AVG_ERROR, 3)))
+plt.legend(loc='upper left')
+plt.xlabel('Frame'), plt.ylabel('Error (m)')
+plt.xlim(0, 1300) #plt.ylim(0, 0.16)
+plt.xticks(np.arange(0, 1300, step=120))
+plt.axes().xaxis.set_minor_locator(ticker.MultipleLocator(60))
+plt.savefig("results/plots/{}_error_plot_smoothed.png".format(CLIP), bbox_inches='tight',
             facecolor='w', edgecolor='k')
 
 # # Seperate plots 
