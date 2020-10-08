@@ -102,7 +102,8 @@ ax = sns.kdeplot(PLAYER_0_X, PLAYER_0_Y,
                  shade=True,
                  shade_lowest=False,
                  levels=50,
-                 antialiased=True)
+                 antialiased=True,
+                 legend=True)
 
 ax.set_title('0')
 ax.set_frame_on(False)
@@ -119,7 +120,8 @@ ax = sns.kdeplot(PLAYER_1_X, PLAYER_1_Y,
                  shade=True,
                  shade_lowest=False,
                  levels=50,
-                 antialiased=True)
+                 antialiased=True,
+                 legend=True)
 ax.set_title('1')
 # imgplot.set_clim(0.0, 0.7)
 # plt.colorbar(ticks=[0.1, 0.3, 0.5, 0.7], orientation='horizontal')
@@ -128,4 +130,4 @@ plt.xlim(0, 520)
 plt.ylim(775, 0)
 
 fig = ax.get_figure()
-fig.savefig('results/heatmaps/match_1_rally_1_heatmap.png', transparent=True, bbox_inches='tight', pad_inches=0)
+fig.savefig('results/plots/match_1_rally_1_heatmap.png', transparent=True, bbox_inches='tight', pad_inches=0)

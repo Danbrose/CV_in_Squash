@@ -125,41 +125,47 @@ print(CC_0, CC_1)
 
 court_plot = plt.imread("court_plot.png")
 
-fig = plt.figure()
+fig = plt.figure(figsize=(10,5))
 ax = fig.add_subplot(1, 2, 1)
 imgplot = plt.imshow(court_plot)
 ax = sns.kdeplot(PLAYER_0_X, PLAYER_0_Y,
                  cmap="coolwarm",
-                 alpha=0.9,
+                 alpha=0.85,
                  shade=True,
                  shade_lowest=False,
                  levels=50,
-                 antialiased=True)
+                 antialiased=True,
+                 cbar=True,
+                 cbar_kws={'ticks':[], 'shrink': 0.9})
 
-ax.set_title('0')
-ax.set_frame_on(False)
+ax.set_title('Player 0', fontsize='x-large')
 plt.axis('off')
 plt.xlim(0, 520)
 plt.ylim(775, 0)
-plt.annotate('Court Coverage: {}m'.format(CC_0), (165, 40), fontsize='x-small')
-# plt.colorbar(ticks=[0.1, 0.3, 0.5, 0.7], orientation='horizontal')
+plt.annotate('Court Coverage: {}m'.format(CC_0), (155, 40), fontsize='small')
 
 ax = fig.add_subplot(1, 2, 2)
 imgplot = plt.imshow(court_plot)
 ax = sns.kdeplot(PLAYER_1_X, PLAYER_1_Y,
                  cmap="coolwarm",
-                 alpha=0.9,
+                 bw_adjust=2,
+                 alpha=0.85,
                  shade=True,
                  shade_lowest=False,
                  levels=50,
-                 antialiased=True)
-ax.set_title('1')
+                 antialiased=True,
+                 cbar=True,
+                 cbar_kws={'ticks':[], 'shrink': 0.9})
+
+ax.set_title('Player 1', fontsize='x-large')
 # imgplot.set_clim(0.0, 0.7)
-# plt.colorbar(ticks=[0.1, 0.3, 0.5, 0.7], orientation='horizontal')
+# plt.colorbar(cmap, "coolwarm", ticks=[0, 1], orientation='vertical')
 plt.axis('off')
 plt.xlim(0, 520)
 plt.ylim(775, 0)
-plt.annotate('Court Coverage: {}m'.format(CC_1), (165, 40), fontsize='x-small')
+plt.annotate('Court Coverage: {}m'.format(CC_1), (155, 40), fontsize='small')
+plt.subplots_adjust(wspace=-0.25, hspace=0)
 
 fig = ax.get_figure()
-fig.savefig('results/heatmaps/match_1_rally_2_heatmap.png', transparent=True, bbox_inches='tight', pad_inches=0)
+fig.savefig('results/plots/match_1_rally_2_heatmap.png', transparent=True,
+            bbox_inches='tight', pad_inches=0.1)

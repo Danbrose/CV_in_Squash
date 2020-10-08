@@ -1,24 +1,8 @@
-# This is a list of everything that is not to be included in the git repo because there are too many files to track or they are too large for git hub. Most of this comprises of demo footage, raw data and outputted data.
-#################################### Folders ###################################
-data/
-results/Center-Point_Tracking/center*.avi
-results/Traditional_Tracking/*.avi
-results/OpenPose/
-simple-object-tracking/
-__pycache__/
-TensorFlow-2.x-YOLOv3/
-fastpose/
-goturn-files/
-################################## VScode stuff ################################
-.devcontainer/*
-.empty/*
-.vscode/.ropeproject/*
-############################## file types ######################################
-*.mp4
-*.avi
-##################################### random ###################################
-goturn.*
-sample.jpg
-sandbox.jpg
-__init__.py
+################################# Everything ###################################
+*
 
+##################################### Keep #####################################
+!.gitignore
+!*/video/*
+!*/code/*
+!*/data/annotated_data
